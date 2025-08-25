@@ -1,10 +1,12 @@
 mod activity;
 mod presence;
 
+use dark_light::Mode;
+use iced::daemon::DefaultStyle;
 use iced::futures::SinkExt;
 use iced::futures::channel::mpsc::{self, UnboundedSender};
 use iced::widget::{button, center};
-use iced::{Element, Task};
+use iced::{Element, Task, Theme};
 
 use crate::activity::Activity;
 use crate::presence::{Presence, PresenceThreadMessage};
@@ -38,15 +40,20 @@ async fn main() -> iced::Result {
 	let (main_send, presence_recv) = mpsc::unbounded::<MainThreadMessage>();
 	let (presence_send, main_recv) = mpsc::unbounded::<PresenceThreadMessage>();
 	Presence::spawn_thread(presence_send, presence_recv);
-	iced::application("Discord presence", App::update, App::view).run_with(move || {
-		(
-			App {
-				send: main_send,
-				activity: Activity::default(),
-			},
-			Task::stream(main_recv).map(|v| v.into()),
-		)
-	})
+	iced::application("Discord presence", App::update, App::view)
+		.theme(|_| match dark_light::detect() {
+			Ok(Mode::Light) => Theme::Light,
+			_ => Theme::Dark,
+		})
+		.run_with(move || {
+			(
+				App {
+					send: main_send,
+					activity: Activity::default(),
+				},
+				Task::stream(main_recv).map(|v| v.into()),
+			)
+		})
 }
 
 impl App {
