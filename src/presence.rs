@@ -67,13 +67,16 @@ impl Presence {
 		};
 
 		match msg {
-			MainThreadMessage::Start => {
-				let Some(client) = &mut self.client else {
-					return Err(anyhow!(PresenceError::NoIdError));
-				};
+			MainThreadMessage::Connect(id) => {
+				let mut client = self
+					.client
+					.take_if(|v| v.client_id == id)
+					.unwrap_or(DiscordIpcClient::new(&id));
+
 				client.connect()?;
+				let _ = self.client.insert(client);
 			}
-			MainThreadMessage::Stop => {
+			MainThreadMessage::Disconnect => {
 				let Some(client) = &mut self.client else {
 					return Err(anyhow!(PresenceError::NoIdError));
 				};
@@ -119,9 +122,9 @@ impl Presence {
 					state: activity.state.as_deref(),
 					details: activity.details.as_deref(),
 					timestamps: Some(timestamp),
+					activity_type: Some(activity.activity_type),
 					..Default::default()
 				};
-				client.connect()?;
 				client.set_activity(discord_activity)?;
 				self.client = Some(client);
 			}

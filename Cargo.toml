@@ -18,3 +18,13 @@ thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["macros", "rt", "rt-multi-thread"] }
 tracing-subscriber = "0.3.19"
 tray-icon = "0.21.1"
+
+[dependencies.iced_aw]
+git = "https://github.com/iced-rs/iced_aw.git"
+features = ["date_picker", "number_input", "selection_list", "time_picker", "menu"]
+
+[patch.crates-io]
+iced_widget = {git = "https://github.com/iced-rs/iced.git"}
+iced_core = {git = "https://github.com/iced-rs/iced.git"}
+iced = { git = "https://github.com/iced-rs/iced.git" }
+
