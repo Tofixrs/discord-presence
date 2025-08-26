@@ -17,5 +17,7 @@ craneLib.buildPackage {
     wayland
     vulkan-loader
     libxkbcommon
+    libappindicator-gtk3
+    xdotool
   ];
 }

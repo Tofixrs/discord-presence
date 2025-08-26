@@ -13,7 +13,12 @@ _: {
       packages = with pkgs; [
         rust-analyzer
       ];
-      LD_LIBRARY_PATH = "${lib.makeLibraryPath [pkgs.wayland pkgs.libxkbcommon pkgs.vulkan-loader]}";
+      LD_LIBRARY_PATH = "${lib.makeLibraryPath [
+        pkgs.wayland
+        pkgs.libxkbcommon
+        pkgs.vulkan-loader
+        pkgs.libappindicator-gtk3
+      ]}";
     };
   };
 }
