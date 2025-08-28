@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use chrono::{Local, TimeZone, Timelike, Utc};
 use discord_rich_presence::{
 	self as drp, DiscordIpc, DiscordIpcClient,
-	activity::{Party, Timestamps},
+	activity::{Assets, Button, Party, Timestamps},
 };
 use iced::futures::{
 	SinkExt, StreamExt,
@@ -154,6 +154,19 @@ impl Presence {
 						t
 					}
 				};
+				let mut buttons = Vec::new();
+				if let (Some(text), Some(url)) = (
+					activity.button1_text.as_ref(),
+					activity.button1_url.as_ref(),
+				) {
+					buttons.push(Button::new(text, url));
+				}
+				if let (Some(text), Some(url)) = (
+					activity.button2_text.as_ref(),
+					activity.button2_url.as_ref(),
+				) {
+					buttons.push(Button::new(text, url));
+				}
 				let discord_activity = drp::activity::Activity {
 					state: activity.state.as_deref(),
 					details: activity.details.as_deref(),
@@ -166,6 +179,13 @@ impl Presence {
 						}),
 						_ => None,
 					},
+					buttons: Some(buttons),
+					assets: Some(Assets {
+						large_image: activity.large_key.as_deref(),
+						large_text: activity.large_text.as_deref(),
+						small_image: activity.small_key.as_deref(),
+						small_text: activity.small_text.as_deref(),
+					}),
 					..Default::default()
 				};
 				client.set_activity(discord_activity)?;

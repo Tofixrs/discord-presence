@@ -8,7 +8,6 @@ use discord_rich_presence::activity::ActivityType;
 use iced::Theme;
 use iced_aw::ICED_AW_FONT_BYTES;
 
-use crate::activity::Activity;
 use crate::app::App;
 
 const TEXT_COLUMN_WIDTH: f32 = 100.;

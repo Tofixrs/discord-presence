@@ -132,6 +132,30 @@ impl App {
 						let _ = self.activity.custom_time.insert(time);
 						self.show_time_picker = false;
 					}
+					ActivityMsg::Button1Text(v) => {
+						let _ = self.activity.button1_text.insert(v);
+					}
+					ActivityMsg::Button2Text(v) => {
+						let _ = self.activity.button2_text.insert(v);
+					}
+					ActivityMsg::Button1URL(v) => {
+						let _ = self.activity.button1_url.insert(v);
+					}
+					ActivityMsg::Button2URL(v) => {
+						let _ = self.activity.button2_url.insert(v);
+					}
+					ActivityMsg::SmallImageText(v) => {
+						let _ = self.activity.small_text.insert(v);
+					}
+					ActivityMsg::SmallImageKey(v) => {
+						let _ = self.activity.small_key.insert(v);
+					}
+					ActivityMsg::LargeImageText(v) => {
+						let _ = self.activity.large_text.insert(v);
+					}
+					ActivityMsg::LargeImageKey(v) => {
+						let _ = self.activity.large_key.insert(v);
+					}
 				};
 
 				Task::none()

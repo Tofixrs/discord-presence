@@ -40,6 +40,8 @@ impl App {
 				self.details_row(),
 				self.state_row(),
 				self.timestamp_row(),
+				self.image_row(),
+				self.button_row(),
 				self.connect_row(),
 			]
 			.padding(10.)
@@ -201,6 +203,116 @@ impl App {
 		.align_x(Horizontal::Center)
 		.into()
 	}
+	fn button_row(&self) -> Element<'_, Message, iced::Theme, iced::Renderer> {
+		row![
+			self.activity_button(
+				1,
+				self.activity
+					.button1_text
+					.as_ref()
+					.unwrap_or(&String::new()),
+				self.activity.button1_url.as_ref().unwrap_or(&String::new()),
+				|v| ActivityMsg::Button1Text(v).into(),
+				|v| ActivityMsg::Button1URL(v).into(),
+			),
+			self.activity_button(
+				2,
+				self.activity
+					.button2_text
+					.as_ref()
+					.unwrap_or(&String::new()),
+				self.activity.button2_url.as_ref().unwrap_or(&String::new()),
+				|v| ActivityMsg::Button2Text(v).into(),
+				|v| ActivityMsg::Button2URL(v).into(),
+			)
+		]
+		.spacing(10)
+		.into()
+	}
+	fn image_row(&self) -> Element<'_, Message, iced::Theme, iced::Renderer> {
+		row![
+			self.activity_image(
+				"Big image",
+				self.activity.large_key.as_ref().unwrap_or(&String::new()),
+				self.activity.large_text.as_ref().unwrap_or(&String::new()),
+				|v| ActivityMsg::LargeImageKey(v).into(),
+				|v| ActivityMsg::LargeImageText(v).into(),
+			),
+			self.activity_image(
+				"Small image",
+				self.activity.small_key.as_ref().unwrap_or(&String::new()),
+				self.activity.small_text.as_ref().unwrap_or(&String::new()),
+				|v| ActivityMsg::SmallImageKey(v).into(),
+				|v| ActivityMsg::SmallImageText(v).into(),
+			)
+		]
+		.spacing(10)
+		.into()
+	}
+	fn activity_button<'a>(
+		&self,
+		nr: u8,
+		btn_text: &str,
+		btn_url: &str,
+		text_msg: impl Fn(String) -> Message + 'a,
+		url_msg: impl Fn(String) -> Message + 'a,
+	) -> Element<'a, Message, iced::Theme, iced::Renderer> {
+		column![
+			text(format!("Button {nr}"))
+				.align_x(Alignment::End)
+				.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+				.align_x(Alignment::End),
+			row![
+				text("Text")
+					.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+					.align_x(Alignment::End),
+				text_input("", btn_text).on_input(text_msg),
+			]
+			.spacing(10),
+			row![
+				text("URL")
+					.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+					.align_x(Alignment::End),
+				text_input("", btn_url).on_input(url_msg),
+			]
+			.spacing(10),
+		]
+		.spacing(10)
+		.width(Length::Fill)
+		.into()
+	}
+	fn activity_image<'a>(
+		&self,
+		image_name: &'a str,
+		image_key: &str,
+		image_text: &str,
+		key_msg: impl Fn(String) -> Message + 'a,
+		text_msg: impl Fn(String) -> Message + 'a,
+	) -> Element<'a, Message, iced::Theme, iced::Renderer> {
+		column![
+			text(image_name)
+				.align_x(Alignment::End)
+				.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+				.align_x(Alignment::End),
+			row![
+				text("Key")
+					.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+					.align_x(Alignment::End),
+				text_input("", image_key).on_input(key_msg),
+			]
+			.spacing(10),
+			row![
+				text("Text")
+					.width(Length::Fixed(TEXT_COLUMN_WIDTH))
+					.align_x(Alignment::End),
+				text_input("", image_text).on_input(text_msg),
+			]
+			.spacing(10),
+		]
+		.spacing(10)
+		.width(Length::Fill)
+		.into()
+	}
 }
 
 fn b(label: &str, msg: Message) -> button::Button<'_, Message, iced::Theme, iced::Renderer> {
@@ -209,4 +321,3 @@ fn b(label: &str, msg: Message) -> button::Button<'_, Message, iced::Theme, iced
 fn menu_button(label: &str) -> button::Button<'_, Message, iced::Theme, iced::Renderer> {
 	button(label).on_press(Message::None)
 }
-

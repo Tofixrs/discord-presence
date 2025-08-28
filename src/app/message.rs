@@ -42,6 +42,14 @@ pub enum ActivityMsg {
 	PartyMax(i32),
 	CustomDate(iced_aw::date_picker::Date),
 	CustomTime(iced_aw::time_picker::Time),
+	Button1Text(String),
+	Button2Text(String),
+	Button1URL(String),
+	Button2URL(String),
+	SmallImageText(String),
+	SmallImageKey(String),
+	LargeImageText(String),
+	LargeImageKey(String),
 }
 
 impl From<PresenceThreadMessage> for Message {
