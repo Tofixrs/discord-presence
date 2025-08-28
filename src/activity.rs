@@ -1,12 +1,12 @@
 use discord_rich_presence::activity::ActivityType;
 
 #[repr(u8)]
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug, Copy, PartialEq, Eq)]
 pub enum TimestampType {
 	#[default]
 	SinceStart = 1,
 	LocalTime = 2,
-	CustomTimestamp = 3,
+	Custom = 3,
 	SinceLastUpdate = 4,
 }
 
@@ -16,9 +16,11 @@ pub struct Activity {
 	pub activity_type: ActivityType,
 	pub details: Option<String>,
 	pub state: Option<String>,
-	pub party_size: Option<u8>,
-	pub party_max: Option<u8>,
+	pub party_size: Option<i32>,
+	pub party_max: Option<i32>,
 	pub timestamp_type: TimestampType,
+	pub custom_date: Option<iced_aw::date_picker::Date>,
+	pub custom_time: Option<iced_aw::time_picker::Time>,
 	pub large_key: Option<String>,
 	pub small_key: Option<String>,
 	pub small_text: Option<String>,
@@ -47,6 +49,8 @@ impl Default for Activity {
 			button2_text: Default::default(),
 			button1_url: Default::default(),
 			button2_url: Default::default(),
+			custom_date: Default::default(),
+			custom_time: Default::default(),
 		}
 	}
 }

@@ -4,7 +4,7 @@ use iced::futures::{SinkExt, channel::mpsc::UnboundedSender};
 use log::error;
 use tokio::task;
 use tray_icon::{
-	Icon, TrayIconBuilder, TrayIconEvent,
+	TrayIconBuilder, TrayIconEvent,
 	menu::{AboutMetadata, Menu, MenuEvent, MenuItem, PredefinedMenuItem},
 };
 
