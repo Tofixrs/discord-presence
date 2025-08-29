@@ -1,7 +1,7 @@
 use chrono::{Datelike, Timelike, Utc};
 use iced::{Task, futures::SinkExt, window};
 use iced_aw::time_picker::Time;
-use log::{error, info};
+use log::error;
 use tray_icon::{MouseButton, MouseButtonState};
 
 use crate::{
@@ -67,19 +67,10 @@ impl App {
 				Task::none()
 			}
 			Message::SetActivity => {
-				let mut sender = self.send.clone();
 				let activity = self.activity.clone();
 
-				Task::future(
-					async move { sender.send(MainThreadMessage::SetActivity(activity)).await },
-				)
-				.then(|v| {
-					let Err(err) = v else {
-						return Task::none();
-					};
-
-					Task::done(Message::Error(err.to_string()))
-				})
+				self.send_presence_msg(MainThreadMessage::SetActivity(activity))
+					.chain(self.write_settings())
 			}
 			Message::Connect => {
 				let activity = self.activity.clone();
@@ -90,6 +81,7 @@ impl App {
 				self.connection_state = ConnectionState::Connecting;
 				self.send_presence_msg(MainThreadMessage::Connect(id))
 					.chain(self.send_presence_msg(MainThreadMessage::SetActivity(activity)))
+					.chain(self.write_settings())
 			}
 			Message::Disconnect => self.send_presence_msg(MainThreadMessage::Disconnect),
 			Message::Activity(msg) => {

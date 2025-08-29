@@ -1,6 +1,7 @@
 mod activity;
 mod app;
 mod presence;
+mod settings;
 mod tray;
 
 use dark_light::Mode;

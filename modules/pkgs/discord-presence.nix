@@ -19,5 +19,6 @@ craneLib.buildPackage {
     libxkbcommon
     libappindicator-gtk3
     xdotool
+    zenity
   ];
 }
