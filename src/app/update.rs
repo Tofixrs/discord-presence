@@ -215,10 +215,7 @@ impl App {
 					Ok(data) => {
 						let activity = serde_xml_rs::from_reader::<Activity, _>(data.as_slice());
 						match activity {
-							Ok(v) => {
-								info!("{v:?}");
-								Message::LoadActivity(v)
-							}
+							Ok(v) => Message::LoadActivity(v),
 							Err(err) => Message::Error(err.to_string()),
 						}
 					}

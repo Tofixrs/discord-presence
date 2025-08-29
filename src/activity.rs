@@ -35,7 +35,9 @@ pub struct Activity {
 	pub large_text: Option<String>,
 	pub button1_text: Option<String>,
 	pub button2_text: Option<String>,
+	#[serde(rename = "Button1URL")]
 	pub button1_url: Option<String>,
+	#[serde(rename = "Button2URL")]
 	pub button2_url: Option<String>,
 }
 
