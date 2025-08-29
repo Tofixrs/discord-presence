@@ -1,4 +1,4 @@
-use chrono::{Datelike, Local, Timelike};
+use chrono::{Datelike, Timelike, Utc};
 use iced::widget::{column, row};
 use iced::{
 	Alignment, Element, Length,
@@ -6,6 +6,7 @@ use iced::{
 	widget::{button, container, pick_list, radio, text, text_input},
 	window::Id,
 };
+use iced_aw::date_picker::Date;
 use iced_aw::{
 	Menu, date_picker,
 	helpers::time_picker,
@@ -28,8 +29,9 @@ impl App {
 		#[rustfmt::skip]
 		let mb = menu_bar!(
         (menu_button("File"), {menu_tpl(menu_items!(
-            (b("Save", Message::None))
-            (b("Save", Message::Exit))
+            (b("Save", Message::SaveActivity))
+            (b("Open", Message::OpenActivity))
+            (b("Exit", Message::Exit))
         ))})
     );
 
@@ -113,26 +115,26 @@ impl App {
 	fn timestamp_row(&self) -> Element<'_, Message, iced::Theme, iced::Renderer> {
 		let open_date_picker = button("Choose date").on_press(Message::ChooseDate);
 		let open_time_picker = button("Choose time").on_press(Message::ChooseTime);
-		let now = Local::now();
+		let date = self.activity.custom_timestamp.unwrap_or(Utc::now());
 		let custom_date = date_picker(
 			self.show_date_picker,
-			self.activity.custom_date.unwrap_or(date_picker::Date {
-				year: now.year(),
-				month: now.month(),
-				day: now.day(),
-			}),
+			Date {
+				year: date.year(),
+				month: date.month(),
+				day: date.day(),
+			},
 			open_date_picker,
 			Message::CancelDate,
 			|v| ActivityMsg::CustomDate(v).into(),
 		);
 		let custom_time = time_picker(
 			self.show_time_picker,
-			self.activity.custom_time.unwrap_or(Time::Hms {
-				hour: now.hour(),
-				minute: now.minute(),
-				second: now.second(),
+			Time::Hms {
+				hour: date.hour(),
+				minute: date.minute(),
+				second: date.second(),
 				period: Period::H24,
-			}),
+			},
 			open_time_picker,
 			Message::CancelTime,
 			|v| ActivityMsg::CustomTime(v).into(),

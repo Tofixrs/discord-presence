@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use chrono::{Local, TimeZone, Timelike, Utc};
+use chrono::{Local, Timelike, Utc};
 use discord_rich_presence::{
 	self as drp, DiscordIpc, DiscordIpcClient,
 	activity::{Assets, Button, Party, Timestamps},
@@ -8,7 +8,6 @@ use iced::futures::{
 	SinkExt, StreamExt,
 	channel::mpsc::{UnboundedReceiver, UnboundedSender},
 };
-use iced_aw::time_picker::{Period, Time};
 use log::error;
 use thiserror::Error;
 use tokio::task;
@@ -128,24 +127,12 @@ impl Presence {
 						t
 					}
 					TimestampType::Custom => {
-						let (
-							&Some(date),
-							&Some(Time::Hms {
-								hour,
-								minute,
-								second,
-								period: Period::H24,
-							}),
-						) = (&activity.custom_date, &activity.custom_time)
-						else {
+						let Some(timestamp) = activity.custom_timestamp else {
 							return Err(anyhow!(PresenceError::NoDate));
 						};
-						let time = Utc
-							.with_ymd_and_hms(date.year, date.month, date.day, hour, minute, second)
-							.unwrap();
 
 						let mut t = Timestamps::new();
-						t.start = Some(time.timestamp());
+						t.start = Some(timestamp.timestamp());
 						t
 					}
 					TimestampType::SinceLastUpdate => {

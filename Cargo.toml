@@ -9,13 +9,15 @@ chrono = "0.4.41"
 dark-light = "2.0.0"
 discord-rich-presence = {git = "https://github.com/Tofixrs/discord-rpc", branch="sanity"}
 gtk = "0.18.2"
-iced = { git = "https://github.com/iced-rs/iced.git", features = ["auto-detect-theme"] }
+iced = { git = "https://github.com/iced-rs/iced.git", features = ["auto-detect-theme", "tokio"] }
 image = "0.25.6"
 log = "0.4.27"
+rfd = "0.15.4"
 serde = { version = "1.0.219", features = ["derive"] }
 serde-xml-rs = "0.8.1"
+serde_repr = "0.1.20"
 thiserror = "2.0.16"
-tokio = { version = "1.47.1", features = ["macros", "rt", "rt-multi-thread"] }
+tokio = { version = "1.47.1", features = ["fs", "macros", "rt", "rt-multi-thread"] }
 tracing-subscriber = "0.3.19"
 tray-icon = "0.21.1"
 

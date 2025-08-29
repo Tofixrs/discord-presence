@@ -19,8 +19,7 @@ static ACTIVITY_TYPES: [ActivityType; 4] = [
 	ActivityType::Listening,
 ];
 
-#[tokio::main]
-async fn main() -> iced::Result {
+fn main() -> iced::Result {
 	tracing_subscriber::fmt::init();
 	iced::daemon(App::new, App::update, App::view)
 		.title("Discord presence")
@@ -28,6 +27,7 @@ async fn main() -> iced::Result {
 			Ok(Mode::Light) => Theme::Light,
 			_ => Theme::Dark,
 		})
+		.executor::<tokio::runtime::Runtime>()
 		.font(ICED_AW_FONT_BYTES)
 		.run()
 }

@@ -21,6 +21,9 @@ pub enum Message {
 	CancelTime,
 	CancelDate,
 	Exit,
+	OpenActivity,
+	SaveActivity,
+	LoadActivity(Activity),
 }
 
 #[allow(clippy::large_enum_variant)]

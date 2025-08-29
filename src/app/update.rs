@@ -1,8 +1,11 @@
+use chrono::{Datelike, Timelike, Utc};
 use iced::{Task, futures::SinkExt, window};
-use log::error;
+use iced_aw::time_picker::Time;
+use log::{error, info};
 use tray_icon::{MouseButton, MouseButtonState};
 
 use crate::{
+	activity::Activity,
 	app::{
 		App, ConnectionState,
 		message::{ActivityMsg, MainThreadMessage, Message},
@@ -125,11 +128,29 @@ impl App {
 						let _ = self.activity.party_max.insert(size);
 					}
 					ActivityMsg::CustomDate(date) => {
-						let _ = self.activity.custom_date.insert(date);
+						let timestamp = self.activity.custom_timestamp.unwrap_or(Utc::now());
+						let timestamp = timestamp.with_year(date.year).unwrap();
+						let timestamp = timestamp.with_month(date.month).unwrap();
+						let timestamp = timestamp.with_day(date.day).unwrap();
+						let _ = self.activity.custom_timestamp.insert(timestamp);
 						self.show_date_picker = false;
 					}
 					ActivityMsg::CustomTime(time) => {
-						let _ = self.activity.custom_time.insert(time);
+						let timestamp = self.activity.custom_timestamp.unwrap_or(Utc::now());
+						let Time::Hms {
+							hour,
+							minute,
+							second,
+							period: _,
+						} = time
+						else {
+							return Task::none();
+						};
+						let timestamp = timestamp.with_hour(hour).unwrap();
+						let timestamp = timestamp.with_minute(minute).unwrap();
+						let timestamp = timestamp.with_second(second).unwrap();
+
+						let _ = self.activity.custom_timestamp.insert(timestamp);
 						self.show_time_picker = false;
 					}
 					ActivityMsg::Button1Text(v) => {
@@ -179,6 +200,56 @@ impl App {
 				Task::none()
 			}
 			Message::None => Task::none(),
+			Message::OpenActivity => Task::future(async {
+				let fd = rfd::AsyncFileDialog::new()
+					.add_filter("activity (.crp)", &["crp"])
+					.pick_file()
+					.await;
+
+				let Some(fd) = fd else {
+					return Message::None;
+				};
+
+				let res = tokio::fs::read(fd.path()).await;
+				match res {
+					Ok(data) => {
+						let activity = serde_xml_rs::from_reader::<Activity, _>(data.as_slice());
+						match activity {
+							Ok(v) => {
+								info!("{v:?}");
+								Message::LoadActivity(v)
+							}
+							Err(err) => Message::Error(err.to_string()),
+						}
+					}
+					Err(err) => Message::Error(err.to_string()),
+				}
+			}),
+			Message::SaveActivity => match serde_xml_rs::to_string(&self.activity) {
+				Ok(activity) => Task::future(async move {
+					let fd = rfd::AsyncFileDialog::new()
+						.add_filter("activity (.crp)", &["crp"])
+						.set_file_name("preset.crp")
+						.save_file()
+						.await;
+
+					let Some(fd) = fd else {
+						return Message::None;
+					};
+					let res = fd.write(activity.as_bytes()).await;
+					let Err(err) = res else {
+						return Message::None;
+					};
+
+					Message::Error(err.to_string())
+				}),
+				Err(err) => Task::done(Message::Error(err.to_string())),
+			},
+			Message::LoadActivity(activity) => {
+				self.activity = activity;
+
+				Task::none()
+			}
 		}
 	}
 }
